@@ -1,0 +1,375 @@
+---
+title: "Coletando as menções nos feeds do Google"
+output:
+  github_document:
+    toc: true
+    toc_depth: 3
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = T,
+  comment = "#>",
+  message = F,
+  warning = F,
+  fig.align="center"
+)
+```
+
+
+# Introdução
+
+Este repositório apresenta uma função em `R` que armazena os [*feeds RSS*](https://pt.wikipedia.org/wiki/RSS) do [Google Notícias](https://news.google.com/) ou do [Google Alerts](https://www.google.com.br/alerts) em uma planilha estruturada.
+
+# Baixe o script
+
+Você pode baixar o script [CLICANDO AQUI](.R/google_rss.R).
+
+# Pacotes necessários
+
+Para rodar a função em seu computador, você vai precisar das seguintes bibliotecas:
+
+```{r}
+library(tidyverse) # conjunto de pacotes de manipulação de dados no R
+library(lubridate) # para formatos de datas
+library(xml2)      # para raspar os dados dos feeds
+library(httr)      # para raspar os dados dos feeds
+```
+
+# Função `google_rss()`
+
+## Sintaxe
+
+```{r eval = FALSE}
+google_rss(
+  termo,
+  frase_exata = TRUE,
+  periodo = NULL,
+  n_periodo = NULL
+)
+```
+
+
+## Parâmetros:
+
+O parâmetro principal é o `termo`
+
+* **`termo`**: Uma palavra-chave de sua preferência, ou o link direto do RSS do Google.
+
+Os parâmetros abaixo não precisam ser especificados se o seu `termo` for um link direto para o feed (se o termo for um link eles serão ignorados).
+
+Se o `termo` for uma palavra-chave, utilize os parâmetros abaixo para ajustar a sua pesquisa. Se nenhum desses parâmetros for fornecido, por *default* a função te retornará uma pesquisa por correspondência exata das últimas 24h.
+
+* **`frase_exata`**: use `TRUE` se quiser correspondência exata na busca do termo (ele será pesquisado entre aspas) ou `FALSE` se quiser correspondência ampla.
+* **`periodo`**: use `"hora"` ou `"dia"` para definir o intervalo de tempo das últimas menções.
+* **`n_periodo`**: um número inteiro para retornar a quantidade de `hora` ou `dia` desejadas para a pesquisa.
+
+## Corpo da função
+
+```{r}
+google_rss <- function(termo, frase_exata = TRUE, periodo = NULL, n_periodo = NULL) {
+  
+  # checa se é palavra-chave ou se é o link RSS:
+  res <- try(read_xml(termo), silent = T)
+  
+  # Se for palavra-chave, o R vai montar a URL:
+  if (isTRUE(class(res) == "try-error")) {
+    
+    # . customizando o período especificado:
+    periodo <- ifelse(is.null(periodo), "dia", periodo)
+    n_periodo <- ifelse(is.null(n_periodo), 1, n_periodo)  
+    
+    prd <- tibble(periodo = periodo, n_periodo = n_periodo) %>%
+      mutate(
+        when = case_when(
+          periodo == "dia" ~ paste0(n_periodo, "d"),
+          periodo == "hora" ~ paste0(n_periodo, "h"),
+          TRUE ~ "1d"
+        )
+      )
+    
+    # . preparando o termo para entrar na url
+    termo <- url_escape(termo)
+    if(frase_exata) termo <- paste('%22', termo, '%22', sep = '')
+    
+    # . finaliza URL
+    rss_url <- paste0(
+      'https://news.google.com/rss/search?q=',
+      termo,
+      '%20when%3A',
+      prd$when,
+      '&hl=pt-BR&gl=BR&ceid=BR%3Apt-419'
+    )
+    
+  } else {
+    
+   # se for uma URL, fica fácil =)
+   rss_url <- termo 
+   
+  }
+
+  # Raspa os dados:
+  if (str_detect(termo, "https://www.google.com/alerts")) {
+
+    # . parent node (conteúdo do rss):
+    item <- rss_url %>% read_xml() %>% xml_ns_strip() %>% xml_children()
+    
+    # . childrens (colunas)
+    termo <- item  %>% 
+      xml_parent() %>%
+      xml_find_first('//title') %>% 
+      xml_text()
+    
+    # . formato de data apropriado
+    data_alerta <- item  %>%
+      xml_find_first('.//updated') %>%
+      xml_text() %>%
+      str_replace_all("[[:alpha:]]", " ") %>% 
+      str_trim() %>% 
+      as_datetime() %>% 
+      na.omit()
+    
+    titulo_da_materia <- item %>% 
+      xml_find_all(".//title") %>% 
+      xml_text(trim = TRUE) %>% 
+      gsub("<.*?>", "", .)
+    
+    data_da_materia <- item  %>% 
+      xml_find_first('.//published') %>%
+      xml_text() %>%
+      str_replace_all("[[:alpha:]]", " ") %>% 
+      str_trim() %>% 
+      as_datetime() %>% 
+      na.omit()
+    
+    link <- item %>% 
+      xml_find_all(".//link/@href") %>% 
+      xml_text() %>% 
+      map_chr(~gsub("(^https.+)(https.+)(\\&.+$)", "\\2", .x))
+    
+    veiculo <- link %>% 
+      map(httr::GET) %>% 
+      map(httr::content) %>% 
+      map(~ xml_find_all(.x, '//meta[@property="og:site_name"]/@content')) %>% 
+      map(xml_text) %>% 
+      map(~ tibble(value = .[1])) %>% 
+      reduce(~ bind_rows(.x, .y)) %>% 
+      pull(value)
+    
+    host <- map_chr(link, ~ parse_url(.x)$hostname)
+    
+  } else {
+    
+    # . parent node (conteúdo do rss):
+    item <- rss_url %>% 
+      read_xml() %>% 
+      xml_find_all('//channel') %>% 
+      xml_find_all('.//item')
+    
+    # . childrens (colunas):
+    termo <-  item %>% 
+      xml_find_first('//title') %>% 
+      xml_text() %>%
+      gsub("(^.+)(when.+$)", "\\1", .) %>% 
+      str_remove_all('\\"') %>% 
+      str_squish()
+    
+    # . precisei ajustar o fuso horário nas datas
+    data_alerta <- item %>% 
+      xml_find_all('//lastBuildDate') %>% 
+      xml_text() %>%
+      parse_datetime("%a, %d %b %Y %H:%M:%S GMT") %>%
+      with_tz("America/Sao_Paulo")
+    
+    titulo_da_materia <- item %>% 
+      xml_find_all('.//title') %>%
+      xml_text()
+    
+    veiculo <- item %>%
+      xml_find_all('.//source') %>%
+      xml_text()
+    
+    link <- item %>%
+      xml_find_all('.//link') %>%
+      xml_text()
+    
+    host <- map_chr(link, ~ parse_url(.x)$hostname)
+    
+    data_da_materia <- item %>% 
+      xml_find_all('.//pubDate') %>% 
+      xml_text() %>% 
+      parse_datetime("%a, %d %b %Y %H:%M:%S GMT") %>%
+      with_tz("America/Sao_Paulo")
+  }
+  
+  # output: mensagem
+  if (isTRUE(class(res) == "try-error")) {
+    
+    cat(
+      paste(
+        "\n\nO link que você pesquisou foi:\n",
+        rss_url,
+        "\n",
+        "\n\nExibindo resultados do período:\n",
+        n_periodo,
+        periodo
+      )
+    )
+    
+  } else {
+    
+    cat(paste("\n\nLink direto de RSS:\n", rss_url,"\n\n"))
+    
+  }
+  
+  # output: tabela
+  rss_tbl <- tibble(
+    termo = termo,
+    data_alerta = data_alerta,
+    titulo_da_materia = titulo_da_materia,
+    veiculo = veiculo,
+    data_da_materia,
+    dia = day(data_da_materia),
+    mes = month(data_da_materia),
+    ano = year(data_da_materia),
+    dia_semana = format(data_da_materia, "%A"),
+    link = link,
+    host = host
+  )
+  
+  return(rss_tbl)
+}
+```
+
+
+
+# Exemplos de uso:
+
+## Pesquisa com link direto:
+
+### Link go Google Alert
+
+ATENÇÃO: Esse link expira a cada 24 horas.
+
+```{r eval = FALSE}
+# link direto de um feed recebido pelo e-mail do Google Alerts:
+ex1 <- google_rss("https://www.google.com/alerts/feeds/05043731044875902072/152558739277222634")
+
+glimpse(ex1)
+```
+
+### Google News RSS
+
+O RSS do Google News fica em uma URL específica, com padrão: `https://news.google.com/rss/search?q={_termo_de_pesquisa_}`. Os resultados são os mesmos conteúdos de uma busca comum no [Google News](https://news.google.com). A diferença é que o RSS fica em uma página XML.
+
+```{r}
+# link direto de um feed do Google News:
+ex2 <- google_rss("https://news.google.com/rss/search?q=%22bob%20marley%22when%3A1d&hl=pt-BR&gl=BR&ceid=BR%3Apt-419")
+
+glimpse(ex2)
+```
+
+## Pesquisa com palavras-chave
+
+### Usando os parâmetros
+
+Buscando por um termo, você obtém os principais resultados de sua correspondência exata nas últimas 24 horas (1 dia):
+
+```{r}
+ex3 <- google_rss("black lives matter")
+
+glimpse(ex3)
+```
+
+Veja a diferença entre uma pesquisa de frase exata e outra com correspondência ampla:
+
+```{r}
+# pesquisa exata (frase_exata = TRUE)
+ex4 <- google_rss("NBA jogadores greve", periodo = "dia", n_periodo = 15, frase_exata = TRUE)
+
+glimpse(ex4)
+```
+
+
+```{r}
+# pesquisa ampla (frase_exata = FALSE)
+ex5 <- google_rss("NBA jogadores greve", periodo = "dia", n_periodo = 15, frase_exata = FALSE)
+
+glimpse(ex5)
+```
+
+Buscas nas últimas 5 horas:
+
+```{r}
+ex6 <- google_rss("Fabrício Queiroz", periodo = "hora", n_periodo = 5, frase_exata = TRUE)
+
+glimpse(ex6)
+```
+
+### Pesquisando várias palavras-chave em um *loop*
+
+Faça várias buscas ao mesmo tempo (também funciona com links):
+
+```{r}
+# Crie uma lista com os termos que deseja pesquisar:
+lista_de_termos <- c(
+  "Transparência Brasil",
+  "Manoel Galdino",
+  "Juliana Sakai"
+)
+
+# rode a lista nesse loop:
+varias_pesquisas <- lista_de_termos %>% 
+  map_df(~ google_rss(.x, frase_exata = T, periodo = "dia", n_periodo = 7))
+
+# veja como ficou:
+varias_pesquisas
+```
+
+# Salve os dados em uma planilha:
+
+## Excel
+
+O problema aqui é que você só pode reescrever a planilha adicionando nova aba. Caso contrário sempre terá que criar outra.
+
+```{r eval = FALSE}
+# Salvando em excel:
+nova_aba <- paste("Pesquisa em", Sys.Date())
+
+library(xlsx)
+
+write.xlsx(as.data.frame(varias_pesquisas),
+           file = "./data/varias_pesquisas.xlsx",
+           # insere os dados em uma aba sem apagar o que já tinha antes:
+           sheetName = nova_aba,
+           append = TRUE)
+```
+
+## Google Spreadsheets:
+
+Siga os passos (atenção ao item 3!):
+
+1. Vá no Google Drive e **crie uma planilha em branco**;
+2. Copie o **link da planilha**;
+3. Crie uma aba nova com [`sheet_write()`](https://googlesheets4.tidyverse.org/reference/sheet_write.html) e **não volte a usar essa função** (senão você reescreve em cima da que estava salva);
+4. Atualiza a planilha com novos dados com [`sheet_append()`](https://googlesheets4.tidyverse.org/reference/sheet_append.html).
+
+```{r}
+library(googlesheets4)
+
+# link da planilha criada no drive:
+link_da_planilha <- "https://docs.google.com/spreadsheets/d/1-sjp0oF3RXDMYwT3IKWEF7y6Cp-ahBkD_MYti5ZejX8/edit?usp=sharing"
+
+# USE SOMENTE UMA VEZ PARA CRIAR A PLANILHA:
+sheet_write(data = varias_pesquisas,
+            ss = link_da_planilha,
+            sheet = "Pesquisa")
+
+# SEMPRE QUE FOR ATUALIZAR USA ESTA: 
+sheet_append(data = ex2,
+             ss = link_da_planilha,
+             sheet = "Pesquisa")
+```
+
+FIM
+:smile:
