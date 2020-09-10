@@ -6,19 +6,19 @@ Coletando as menções nos feeds do Google
   - [Pacotes necessários](#pacotes-necessários)
   - [Função `google_rss()`](#função-google_rss)
       - [Sintaxe](#sintaxe)
-      - [Parâmetros:](#parâmetros)
+      - [Parâmetros](#parâmetros)
       - [Corpo da função](#corpo-da-função)
-  - [Exemplos de uso:](#exemplos-de-uso)
-      - [Pesquisa com link direto:](#pesquisa-com-link-direto)
+  - [Exemplos de uso](#exemplos-de-uso)
+      - [Pesquisa com link direto](#pesquisa-com-link-direto)
           - [Google Alert](#google-alert)
           - [Google News RSS](#google-news-rss)
       - [Pesquisa com palavras-chave](#pesquisa-com-palavras-chave)
           - [Usando os parâmetros](#usando-os-parâmetros)
   - [Pesquisando palavras e links em um
     *loop*](#pesquisando-palavras-e-links-em-um-loop)
-  - [Salve os dados em uma planilha:](#salve-os-dados-em-uma-planilha)
+  - [Salve os dados em uma planilha](#salve-os-dados-em-uma-planilha)
       - [Excel](#excel)
-      - [Google Spreadsheets:](#google-spreadsheets)
+      - [Google Spreadsheets](#google-spreadsheets)
 
 # Introdução
 
@@ -59,7 +59,7 @@ google_rss(
 )
 ```
 
-## Parâmetros:
+## Parâmetros
 
 O parâmetro principal é o `termo`
 
@@ -262,9 +262,9 @@ google_rss <- function(termo, frase_exata = TRUE, periodo = NULL, n_periodo = NU
 }
 ```
 
-# Exemplos de uso:
+# Exemplos de uso
 
-## Pesquisa com link direto:
+## Pesquisa com link direto
 
 ### Google Alert
 
@@ -272,26 +272,26 @@ ATENÇÃO: Esse link expira a cada 24 horas.
 
 ``` r
 # link direto de um feed recebido pelo e-mail do Google Alerts:
-ex1 <- google_rss("https://www.google.com/alerts/feeds/14690018069938359893/7021405697253714962")
+ex1 <- google_rss("https://www.google.com/alerts/feeds/05043731044875902072/50361800581757200")
 #> 
 #> 
 #> Link direto de RSS:
-#>  https://www.google.com/alerts/feeds/14690018069938359893/7021405697253714962
+#>  https://www.google.com/alerts/feeds/05043731044875902072/50361800581757200
 
 glimpse(ex1)
 #> Rows: 1
 #> Columns: 11
-#> $ termo             <chr> "Google Alert - \"Open Knowledge Brasil\""
-#> $ data_alerta       <dttm> 2020-09-09 22:30:00
-#> $ titulo_da_materia <chr> "RS alcança topo do ranking que avalia o índice d...
-#> $ veiculo           <chr> "NH"
-#> $ data_da_materia   <dttm> 2020-09-09 22:30:00
+#> $ termo             <chr> "Google Alert - \"Transparência Brasil\""
+#> $ data_alerta       <dttm> 2020-09-09 16:31:40
+#> $ titulo_da_materia <chr> "Cancelamento do Auxílio-Doença do INSS com 4 pon...
+#> $ veiculo           <chr> "MixVale"
+#> $ data_da_materia   <dttm> 2020-09-09 16:31:40
 #> $ dia               <int> 9
 #> $ mes               <dbl> 9
 #> $ ano               <dbl> 2020
 #> $ dia_semana        <chr> "quarta-feira"
-#> $ link              <chr> "https://www.jornalnh.com.br/noticias/rio_grande_...
-#> $ host              <chr> "www.jornalnh.com.br"
+#> $ link              <chr> "https://www.mixvale.com.br/2020/09/09/cancelamen...
+#> $ host              <chr> "www.mixvale.com.br"
 ```
 
 ### Google News RSS
@@ -316,19 +316,19 @@ ex2 <- google_rss("https://news.google.com/rss/search?q=%22bob%20marley%22when%3
 #>  https://news.google.com/rss/search?q=%22bob%20marley%22when%3A1d&hl=pt-BR&gl=BR&ceid=BR%3Apt-419
 
 glimpse(ex2)
-#> Rows: 5
+#> Rows: 6
 #> Columns: 11
 #> $ termo             <chr> "bob marley", "bob marley", "bob marley", "bob ma...
-#> $ data_alerta       <dttm> 2020-09-10 11:35:02, 2020-09-10 11:35:02, 2020-0...
-#> $ titulo_da_materia <chr> "Notícias da semana no Reggae Point - MiranteFM.c...
-#> $ veiculo           <chr> "Imirante.com", "TV e Famosos", "radar amazonico"...
-#> $ data_da_materia   <dttm> 2020-09-10 05:59:00, 2020-09-10 11:09:55, 2020-0...
-#> $ dia               <int> 10, 10, 10, 9, 9
-#> $ mes               <dbl> 9, 9, 9, 9, 9
-#> $ ano               <dbl> 2020, 2020, 2020, 2020, 2020
+#> $ data_alerta       <dttm> 2020-09-10 15:15:08, 2020-09-10 15:15:08, 2020-0...
+#> $ titulo_da_materia <chr> "Confira quatro curiosidades sobre o reggae que v...
+#> $ veiculo           <chr> "Portal R10", "Imirante.com", "Istoe", "O Tempo",...
+#> $ data_da_materia   <dttm> 2020-09-10 11:43:00, 2020-09-10 05:59:00, 2020-0...
+#> $ dia               <int> 10, 10, 10, 9, 9, 10
+#> $ mes               <dbl> 9, 9, 9, 9, 9, 9
+#> $ ano               <dbl> 2020, 2020, 2020, 2020, 2020, 2020
 #> $ dia_semana        <chr> "quinta-feira", "quinta-feira", "quinta-feira", "...
-#> $ link              <chr> "https://imirante.com/mirantefm/noticias/2020/09/...
-#> $ host              <chr> "imirante.com", "tvefamosos.uol.com.br", "radaram...
+#> $ link              <chr> "https://www.portalr10.com/noticia/56577/confira-...
+#> $ host              <chr> "www.portalr10.com", "imirante.com", "istoe.com.b...
 ```
 
 ## Pesquisa com palavras-chave
@@ -350,19 +350,19 @@ ex3 <- google_rss("black lives matter")
 #>  1 dia
 
 glimpse(ex3)
-#> Rows: 8
+#> Rows: 13
 #> Columns: 11
 #> $ termo             <chr> "black lives matter", "black lives matter", "blac...
-#> $ data_alerta       <dttm> 2020-09-10 11:35:03, 2020-09-10 11:35:03, 2020-0...
+#> $ data_alerta       <dttm> 2020-09-10 15:15:09, 2020-09-10 15:15:09, 2020-0...
 #> $ titulo_da_materia <chr> "American Airlines vai confeccionar broches do “B...
-#> $ veiculo           <chr> "Estudos Nacionais", "RTP", "Educação Estadão", "...
+#> $ veiculo           <chr> "Estudos Nacionais", "RTP", "VEJA.com", "Tribuna ...
 #> $ data_da_materia   <dttm> 2020-09-09 17:16:33, 2020-09-10 03:26:00, 2020-0...
-#> $ dia               <int> 9, 10, 9, 9, 9, 9, 9, 9
-#> $ mes               <dbl> 9, 9, 9, 9, 9, 9, 9, 9
-#> $ ano               <dbl> 2020, 2020, 2020, 2020, 2020, 2020, 2020, 2020
-#> $ dia_semana        <chr> "quarta-feira", "quinta-feira", "quarta-feira", "...
+#> $ dia               <int> 9, 10, 10, 9, 10, 10, 9, 10, 9, 9, 9, 10, 10
+#> $ mes               <dbl> 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9
+#> $ ano               <dbl> 2020, 2020, 2020, 2020, 2020, 2020, 2020, 2020, 2...
+#> $ dia_semana        <chr> "quarta-feira", "quinta-feira", "quinta-feira", "...
 #> $ link              <chr> "https://www.estudosnacionais.com/28389/american-...
-#> $ host              <chr> "www.estudosnacionais.com", "www.rtp.pt", "educac...
+#> $ host              <chr> "www.estudosnacionais.com", "www.rtp.pt", "veja.a...
 ```
 
 Veja a diferença entre uma pesquisa de frase exata e outra com
@@ -409,15 +409,15 @@ ex5 <- google_rss("NBA jogadores greve", periodo = "dia", n_periodo = 15, frase_
 #>  15 dia
 
 glimpse(ex5)
-#> Rows: 24
+#> Rows: 22
 #> Columns: 11
 #> $ termo             <chr> "NBA jogadores greve", "NBA jogadores greve", "NB...
-#> $ data_alerta       <dttm> 2020-09-10 11:35:04, 2020-09-10 11:35:04, 2020-0...
+#> $ data_alerta       <dttm> 2020-09-10 15:15:12, 2020-09-10 15:15:12, 2020-0...
 #> $ titulo_da_materia <chr> "Funcionários fazem greve e cobram a NBA contra r...
 #> $ veiculo           <chr> "globoesporte.com", "Revista Fórum", "Sputnik Bra...
 #> $ data_da_materia   <dttm> 2020-08-28 04:00:00, 2020-08-27 04:00:00, 2020-0...
-#> $ dia               <int> 28, 27, 27, 3, 27, 3, 28, 4, 4, 2, 4, 28, 29, 27,...
-#> $ mes               <dbl> 8, 8, 8, 9, 8, 9, 8, 9, 9, 9, 9, 8, 8, 8, 9, 8, 9...
+#> $ dia               <int> 28, 27, 27, 3, 27, 28, 4, 4, 4, 2, 28, 29, 4, 27,...
+#> $ mes               <dbl> 8, 8, 8, 9, 8, 8, 9, 9, 9, 9, 8, 8, 9, 8, 9, 9, 9...
 #> $ ano               <dbl> 2020, 2020, 2020, 2020, 2020, 2020, 2020, 2020, 2...
 #> $ dia_semana        <chr> "sexta-feira", "quinta-feira", "quinta-feira", "q...
 #> $ link              <chr> "https://globoesporte.globo.com/basquete/nba/noti...
@@ -438,26 +438,26 @@ ex6 <- google_rss("Fabrício Queiroz", periodo = "hora", n_periodo = 5, frase_ex
 #>  5 hora
 
 glimpse(ex6)
-#> Rows: 4
+#> Rows: 2
 #> Columns: 11
-#> $ termo             <chr> "Fabrício Queiroz", "Fabrício Queiroz", "Fabrício...
-#> $ data_alerta       <dttm> 2020-09-10 11:35:04, 2020-09-10 11:35:04, 2020-0...
-#> $ titulo_da_materia <chr> "Detonautas Roque Clube lança música que satiriza...
-#> $ veiculo           <chr> "OFuxico", "Revista Seleções", "Mais Goiás", "Os ...
-#> $ data_da_materia   <dttm> 2020-09-10 09:25:27, 2020-09-10 06:39:25, 2020-0...
-#> $ dia               <int> 10, 10, 10, 10
-#> $ mes               <dbl> 9, 9, 9, 9
-#> $ ano               <dbl> 2020, 2020, 2020, 2020
-#> $ dia_semana        <chr> "quinta-feira", "quinta-feira", "quinta-feira", "...
-#> $ link              <chr> "https://www.ofuxico.com.br/noticias-sobre-famoso...
-#> $ host              <chr> "www.ofuxico.com.br", "www.selecoes.com.br", "www...
+#> $ termo             <chr> "Fabrício Queiroz", "Fabrício Queiroz"
+#> $ data_alerta       <dttm> 2020-09-10 15:15:13, 2020-09-10 15:15:13
+#> $ titulo_da_materia <chr> "Guedes revelou que o Posto Ipiranga encolheu e f...
+#> $ veiculo           <chr> "UOL Notícias", "FDR - Terra"
+#> $ data_da_materia   <dttm> 2020-09-10 13:36:00, 2020-09-10 13:49:52
+#> $ dia               <int> 10, 10
+#> $ mes               <dbl> 9, 9
+#> $ ano               <dbl> 2020, 2020
+#> $ dia_semana        <chr> "quinta-feira", "quinta-feira"
+#> $ link              <chr> "https://noticias.uol.com.br/colunas/tales-faria/...
+#> $ host              <chr> "noticias.uol.com.br", "fdr.com.br"
 ```
 
 # Pesquisando palavras e links em um *loop*
 
 Faça várias buscas ao mesmo tempo:
 
-  - Por palavras-chave:
+  - Por palavras-chave
 
 <!-- end list -->
 
@@ -498,19 +498,19 @@ pesquisas_por_palavras <- lista_de_palavras %>%
 
 # veja como ficou:
 glimpse(pesquisas_por_palavras)
-#> Rows: 11
+#> Rows: 9
 #> Columns: 11
 #> $ termo             <chr> "Transparência Brasil", "Transparência Brasil", "...
-#> $ data_alerta       <dttm> 2020-09-10 11:35:05, 2020-09-10 11:35:05, 2020-0...
-#> $ titulo_da_materia <chr> "Transparência Brasil mostra ranking de ações de ...
-#> $ veiculo           <chr> "Portal a12", "MixVale", "The Intercept Brasil", ...
-#> $ data_da_materia   <dttm> 2020-09-03 14:57:10, 2020-09-09 13:31:40, 2020-0...
-#> $ dia               <int> 3, 9, 8, 3, 4, 4, 4, 5, 9, 5, 8
-#> $ mes               <dbl> 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9
-#> $ ano               <dbl> 2020, 2020, 2020, 2020, 2020, 2020, 2020, 2020, 2...
-#> $ dia_semana        <chr> "quinta-feira", "quarta-feira", "terça-feira", "q...
-#> $ link              <chr> "https://www.a12.com/radio/noticias/transparencia...
-#> $ host              <chr> "www.a12.com", "www.mixvale.com.br", "theintercep...
+#> $ data_alerta       <dttm> 2020-09-10 15:15:14, 2020-09-10 15:15:14, 2020-0...
+#> $ titulo_da_materia <chr> "Cancelamento do Auxílio-Doença do INSS com 4 pon...
+#> $ veiculo           <chr> "MixVale", "The Intercept Brasil", "Jornal do Toc...
+#> $ data_da_materia   <dttm> 2020-09-09 13:31:40, 2020-09-08 02:14:00, 2020-0...
+#> $ dia               <int> 9, 8, 4, 4, 5, 4, 9, 5, 8
+#> $ mes               <dbl> 9, 9, 9, 9, 9, 9, 9, 9, 9
+#> $ ano               <dbl> 2020, 2020, 2020, 2020, 2020, 2020, 2020, 2020, 2020
+#> $ dia_semana        <chr> "quarta-feira", "terça-feira", "sexta-feira", "se...
+#> $ link              <chr> "https://www.mixvale.com.br/2020/09/09/cancelamen...
+#> $ host              <chr> "www.mixvale.com.br", "theintercept.com", "www.jo...
 ```
 
   - Por links RSS:
@@ -522,7 +522,9 @@ glimpse(pesquisas_por_palavras)
 lista_de_links <- c(
   "https://news.google.com/rss/search?q=%20%22Covid-19%22%20when%3A1h&hl=pt-BR&gl=BR&ceid=BR%3Apt-419",
   "https://news.google.com/rss/search?q=%22Palmeiras%22%20when%3A1h&hl=pt-BR&gl=BR&ceid=BR%3Apt-419",
-  "https://news.google.com/rss/search?q=%22bob%20marley%22when%3A1d&hl=pt-BR&gl=BR&ceid=BR%3Apt-419"
+  "https://news.google.com/rss/search?q=%22bob%20marley%22when%3A1d&hl=pt-BR&gl=BR&ceid=BR%3Apt-419",
+  "https://www.google.com/alerts/feeds/05043731044875902072/50361800581757200",
+  "https://www.google.com/alerts/feeds/14690018069938359893/7021405697253714962"
    # (...)
 )
 
@@ -541,26 +543,36 @@ pesquisas_por_links <- lista_de_links %>% map_df(~ google_rss(.x))
 #> 
 #> 
 #> Link direto de RSS:
-#>  https://news.google.com/rss/search?q=%22bob%20marley%22when%3A1d&hl=pt-BR&gl=BR&ceid=BR%3Apt-419
+#>  https://news.google.com/rss/search?q=%22bob%20marley%22when%3A1d&hl=pt-BR&gl=BR&ceid=BR%3Apt-419 
+#> 
+#> 
+#> 
+#> Link direto de RSS:
+#>  https://www.google.com/alerts/feeds/05043731044875902072/50361800581757200 
+#> 
+#> 
+#> 
+#> Link direto de RSS:
+#>  https://www.google.com/alerts/feeds/14690018069938359893/7021405697253714962
 
 # veja como ficou:
 glimpse(pesquisas_por_links)
-#> Rows: 66
+#> Rows: 61
 #> Columns: 11
 #> $ termo             <chr> "Covid-19", "Covid-19", "Covid-19", "Covid-19", "...
-#> $ data_alerta       <dttm> 2020-09-10 11:35:07, 2020-09-10 11:35:07, 2020-0...
-#> $ titulo_da_materia <chr> "Covid persistente: os sintomas e as sequelas mai...
-#> $ veiculo           <chr> "UOL", "Olhar Digital", "Estado de Minas", "Agênc...
-#> $ data_da_materia   <dttm> 2020-09-10 10:39:48, 2020-09-10 10:36:00, 2020-0...
+#> $ data_alerta       <dttm> 2020-09-10 15:15:18, 2020-09-10 15:15:18, 2020-0...
+#> $ titulo_da_materia <chr> "Governo cria grupo para coordenar vacinação cont...
+#> $ veiculo           <chr> "Folha Vitória", "G1", "Terra", "O Tempo", "A Tri...
+#> $ data_da_materia   <dttm> 2020-09-10 14:24:50, 2020-09-10 15:02:00, 2020-0...
 #> $ dia               <int> 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 1...
 #> $ mes               <dbl> 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9...
 #> $ ano               <dbl> 2020, 2020, 2020, 2020, 2020, 2020, 2020, 2020, 2...
 #> $ dia_semana        <chr> "quinta-feira", "quinta-feira", "quinta-feira", "...
-#> $ link              <chr> "https://www.uol.com.br/vivabem/noticias/bbc/2020...
-#> $ host              <chr> "www.uol.com.br", "olhardigital.com.br", "www.em....
+#> $ link              <chr> "https://www.folhavitoria.com.br/geral/noticia/09...
+#> $ host              <chr> "www.folhavitoria.com.br", "g1.globo.com", "www.t...
 ```
 
-# Salve os dados em uma planilha:
+# Salve os dados em uma planilha
 
 ## Excel
 
@@ -589,7 +601,7 @@ write.xlsx(as.data.frame(pesquisas_por_links),
 Veja o resultado
 [AQUI](https://github.com/rdurl0/google-rss-feeds-com-r/blob/master/data/varias_pesquisas.xlsx)
 
-## Google Spreadsheets:
+## Google Spreadsheets
 
 Siga os passos (atenção ao item 3\!):
 
@@ -626,7 +638,7 @@ sheet_write(data = pesquisas_por_links,
 
 <!-- end list -->
 
-``` reval
+``` r
 # SEMPRE QUE FOR ATUALIZAR USA ESTA: 
 sheet_append(data = ex5, # adiciona novos dados
              ss = link_da_planilha,

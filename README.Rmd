@@ -51,8 +51,7 @@ google_rss(
 )
 ```
 
-
-## Parâmetros:
+## Parâmetros
 
 O parâmetro principal é o `termo`
 
@@ -247,9 +246,9 @@ google_rss <- function(termo, frase_exata = TRUE, periodo = NULL, n_periodo = NU
 
 
 
-# Exemplos de uso:
+# Exemplos de uso
 
-## Pesquisa com link direto:
+## Pesquisa com link direto
 
 ### Google Alert
 
@@ -257,7 +256,7 @@ ATENÇÃO: Esse link expira a cada 24 horas.
 
 ```{r}
 # link direto de um feed recebido pelo e-mail do Google Alerts:
-ex1 <- google_rss("https://www.google.com/alerts/feeds/14690018069938359893/7021405697253714962")
+ex1 <- google_rss("https://www.google.com/alerts/feeds/05043731044875902072/50361800581757200")
 
 glimpse(ex1)
 ```
@@ -316,7 +315,7 @@ glimpse(ex6)
 
 Faça várias buscas ao mesmo tempo:
 
-* Por palavras-chave:
+* Por palavras-chave
 
 ```{r}
 # Crie uma lista com os termos que deseja pesquisar:
@@ -342,7 +341,9 @@ glimpse(pesquisas_por_palavras)
 lista_de_links <- c(
   "https://news.google.com/rss/search?q=%20%22Covid-19%22%20when%3A1h&hl=pt-BR&gl=BR&ceid=BR%3Apt-419",
   "https://news.google.com/rss/search?q=%22Palmeiras%22%20when%3A1h&hl=pt-BR&gl=BR&ceid=BR%3Apt-419",
-  "https://news.google.com/rss/search?q=%22bob%20marley%22when%3A1d&hl=pt-BR&gl=BR&ceid=BR%3Apt-419"
+  "https://news.google.com/rss/search?q=%22bob%20marley%22when%3A1d&hl=pt-BR&gl=BR&ceid=BR%3Apt-419",
+  "https://www.google.com/alerts/feeds/05043731044875902072/50361800581757200",
+  "https://www.google.com/alerts/feeds/14690018069938359893/7021405697253714962"
    # (...)
 )
 
@@ -354,7 +355,7 @@ glimpse(pesquisas_por_links)
 ```
 
 
-# Salve os dados em uma planilha:
+# Salve os dados em uma planilha
 
 ## Excel
 
@@ -381,7 +382,7 @@ write.xlsx(as.data.frame(pesquisas_por_links),
 
 Veja o resultado [AQUI](https://github.com/rdurl0/google-rss-feeds-com-r/blob/master/data/varias_pesquisas.xlsx)
 
-## Google Spreadsheets:
+## Google Spreadsheets
 
 Siga os passos (atenção ao item 3!):
 
@@ -395,7 +396,7 @@ link_da_planilha <- "https://docs.google.com/spreadsheets/d/1-sjp0oF3RXDMYwT3IKW
 
 3. Crie uma aba nova com [`sheet_write()`](https://googlesheets4.tidyverse.org/reference/sheet_write.html) e **não volte a usar essa função** (senão você reescreve em cima da que estava salva);
 
-```{r eval = FALSE}
+```{r eval=FALSE}
 # USE SOMENTE UMA VEZ PARA CRIAR CADA ABA DA PLANILHA:
 sheet_write(data = pesquisas_por_palavras,
             ss = link_da_planilha,
@@ -408,7 +409,7 @@ sheet_write(data = pesquisas_por_links,
 
 4. Atualiza a planilha com novos dados com [`sheet_append()`](https://googlesheets4.tidyverse.org/reference/sheet_append.html).
 
-```{reval = FALSE}
+```{r eval=FALSE}
 # SEMPRE QUE FOR ATUALIZAR USA ESTA: 
 sheet_append(data = ex5, # adiciona novos dados
              ss = link_da_planilha,
