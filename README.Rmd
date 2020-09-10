@@ -23,7 +23,7 @@ Este repositório apresenta uma função em `R` que armazena os [*feeds RSS*](ht
 
 # Baixe o script
 
-Você pode baixar o script [CLICANDO AQUI](.R/google_rss.R).
+Você pode baixar o script [CLICANDO AQUI](https://github.com/rdurl0/google-rss-feeds-com-r/blob/master/R/google_rss.R).
 
 # Pacotes necessários
 
@@ -34,6 +34,8 @@ library(tidyverse) # conjunto de pacotes de manipulação de dados no R
 library(lubridate) # para formatos de datas
 library(xml2)      # para raspar os dados dos feeds
 library(httr)      # para raspar os dados dos feeds
+library(xlsx)      # salva em Excel
+library(googlesheets4) # salva em Google Spreadsheet
 ```
 
 # Função `google_rss()`
@@ -306,25 +308,47 @@ ex6 <- google_rss("Fabrício Queiroz", periodo = "hora", n_periodo = 5, frase_ex
 glimpse(ex6)
 ```
 
-### Pesquisando várias palavras-chave em um *loop*
+# Pesquisando palavras links em um *loop*
 
-Faça várias buscas ao mesmo tempo (também funciona com links):
+Faça várias buscas ao mesmo tempo:
+
+* Por palavras-chave:
 
 ```{r}
 # Crie uma lista com os termos que deseja pesquisar:
-lista_de_termos <- c(
+lista_de_palavras <- c(
   "Transparência Brasil",
   "Manoel Galdino",
   "Juliana Sakai"
+   # (...)
 )
 
 # rode a lista nesse loop:
-varias_pesquisas <- lista_de_termos %>% 
+pesquisas_por_palavras <- lista_de_palavras %>% 
   map_df(~ google_rss(.x, frase_exata = T, periodo = "dia", n_periodo = 7))
 
 # veja como ficou:
-varias_pesquisas
+glimpse(pesquisas_por_palavras)
 ```
+
+* Por links RSS:
+
+```{r}
+# faça o mesmo com os links:
+lista_de_links <- c(
+  "https://news.google.com/rss/search?q=%20%22Covid-19%22%20when%3A1h&hl=pt-BR&gl=BR&ceid=BR%3Apt-419",
+  "https://news.google.com/rss/search?q=%22Palmeiras%22%20when%3A1h&hl=pt-BR&gl=BR&ceid=BR%3Apt-419",
+  "https://news.google.com/rss/search?q=%22bob%20marley%22when%3A1d&hl=pt-BR&gl=BR&ceid=BR%3Apt-419"
+   # (...)
+)
+
+# rode a lista nesse loop:
+pesquisas_por_links <- lista_de_links %>% map_df(~ google_rss(.x))
+
+# veja como ficou:
+glimpse(pesquisas_por_links)
+```
+
 
 # Salve os dados em uma planilha:
 
@@ -333,17 +357,25 @@ varias_pesquisas
 O problema aqui é que você só pode reescrever a planilha adicionando nova aba. Caso contrário sempre terá que criar outra.
 
 ```{r eval = FALSE}
-# Salvando em excel:
-nova_aba <- paste("Pesquisa em", Sys.Date())
+# Cria as abas, sempre tem que criar uma aba nova:
+aba_plvr_chave <- paste("Palavras-chave em", today())
+aba_links <- paste("Links em", today())
 
-library(xlsx)
-
-write.xlsx(as.data.frame(varias_pesquisas),
+# palavras
+write.xlsx(as.data.frame(pesquisas_por_palavras),
            file = "./data/varias_pesquisas.xlsx",
            # insere os dados em uma aba sem apagar o que já tinha antes:
-           sheetName = nova_aba,
+           sheetName = aba_plvr_chave,
+           append = TRUE)
+
+# links
+write.xlsx(as.data.frame(pesquisas_por_links),
+           file = "./data/varias_pesquisas.xlsx",
+           sheetName = aba_links,
            append = TRUE)
 ```
+
+Veja o resultado [AQUI](https://github.com/rdurl0/google-rss-feeds-com-r/blob/master/data/varias_pesquisas.xlsx)
 
 ## Google Spreadsheets:
 
@@ -351,25 +383,41 @@ Siga os passos (atenção ao item 3!):
 
 1. Vá no Google Drive e **crie uma planilha em branco**;
 2. Copie o **link da planilha**;
+
+```{r}
+# link da planilha criada no drive:
+link_da_planilha <- "https://docs.google.com/spreadsheets/d/1-sjp0oF3RXDMYwT3IKWEF7y6Cp-ahBkD_MYti5ZejX8/edit?usp=sharing"
+```
+
 3. Crie uma aba nova com [`sheet_write()`](https://googlesheets4.tidyverse.org/reference/sheet_write.html) e **não volte a usar essa função** (senão você reescreve em cima da que estava salva);
+
+```{r}
+# USE SOMENTE UMA VEZ PARA CRIAR CADA ABA DA PLANILHA:
+sheet_write(data = pesquisas_por_palavras,
+            ss = link_da_planilha,
+            sheet = "Palavras-chave")
+
+sheet_write(data = pesquisas_por_links,
+            ss = link_da_planilha,
+            sheet = "Links")
+```
+
 4. Atualiza a planilha com novos dados com [`sheet_append()`](https://googlesheets4.tidyverse.org/reference/sheet_append.html).
 
 ```{r}
-library(googlesheets4)
-
-# link da planilha criada no drive:
-link_da_planilha <- "https://docs.google.com/spreadsheets/d/1-sjp0oF3RXDMYwT3IKWEF7y6Cp-ahBkD_MYti5ZejX8/edit?usp=sharing"
-
-# USE SOMENTE UMA VEZ PARA CRIAR A PLANILHA:
-sheet_write(data = varias_pesquisas,
-            ss = link_da_planilha,
-            sheet = "Pesquisa")
-
 # SEMPRE QUE FOR ATUALIZAR USA ESTA: 
-sheet_append(data = ex2,
+sheet_append(data = ex5, # adiciona novos dados
              ss = link_da_planilha,
-             sheet = "Pesquisa")
+             sheet = "Palavras-chave")
+
+sheet_append(data = ex2, # adiciona novos dados
+             ss = link_da_planilha,
+             sheet = "Links")
 ```
 
+
+veja o resultado [AQUI](https://docs.google.com/spreadsheets/d/1-sjp0oF3RXDMYwT3IKWEF7y6Cp-ahBkD_MYti5ZejX8/edit?usp=sharing)
+
 FIM
+
 :smile:

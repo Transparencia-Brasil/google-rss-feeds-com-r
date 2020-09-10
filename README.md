@@ -14,8 +14,8 @@ Coletando as menções nos feeds do Google
           - [Google News RSS](#google-news-rss)
       - [Pesquisa com palavras-chave](#pesquisa-com-palavras-chave)
           - [Usando os parâmetros](#usando-os-parâmetros)
-          - [Pesquisando várias palavras-chave em um
-            *loop*](#pesquisando-várias-palavras-chave-em-um-loop)
+  - [Pesquisando palavras links em um
+    *loop*](#pesquisando-palavras-links-em-um-loop)
   - [Salve os dados em uma planilha:](#salve-os-dados-em-uma-planilha)
       - [Excel](#excel)
       - [Google Spreadsheets:](#google-spreadsheets)
@@ -29,7 +29,8 @@ Alerts](https://www.google.com.br/alerts) em uma planilha estruturada.
 
 # Baixe o script
 
-Você pode baixar o script [CLICANDO AQUI](.R/google_rss.R).
+Você pode baixar o script [CLICANDO
+AQUI](https://github.com/rdurl0/google-rss-feeds-com-r/blob/master/R/google_rss.R).
 
 # Pacotes necessários
 
@@ -41,6 +42,8 @@ library(tidyverse) # conjunto de pacotes de manipulação de dados no R
 library(lubridate) # para formatos de datas
 library(xml2)      # para raspar os dados dos feeds
 library(httr)      # para raspar os dados dos feeds
+library(xlsx)      # salva em Excel
+library(googlesheets4) # salva em Google Spreadsheet
 ```
 
 # Função `google_rss()`
@@ -289,19 +292,19 @@ ex2 <- google_rss("https://news.google.com/rss/search?q=%22bob%20marley%22when%3
 #>  https://news.google.com/rss/search?q=%22bob%20marley%22when%3A1d&hl=pt-BR&gl=BR&ceid=BR%3Apt-419
 
 glimpse(ex2)
-#> Rows: 3
+#> Rows: 6
 #> Columns: 11
-#> $ termo             <chr> "bob marley", "bob marley", "bob marley"
-#> $ data_alerta       <dttm> 2020-09-10 00:27:13, 2020-09-10 00:27:13, 2020-0...
-#> $ titulo_da_materia <chr> "Festival Internacional de Cerveja e Cultura será...
-#> $ veiculo           <chr> "O Tempo", "Portal R10", "Virou Pauta"
-#> $ data_da_materia   <dttm> 2020-09-09 19:59:00, 2020-09-09 10:31:00, 2020-0...
-#> $ dia               <int> 9, 9, 9
-#> $ mes               <dbl> 9, 9, 9
-#> $ ano               <dbl> 2020, 2020, 2020
-#> $ dia_semana        <chr> "quarta-feira", "quarta-feira", "quarta-feira"
-#> $ link              <chr> "https://www.otempo.com.br/opiniao/cerveja-e-cult...
-#> $ host              <chr> "www.otempo.com.br", "www.portalr10.com", "viroup...
+#> $ termo             <chr> "bob marley", "bob marley", "bob marley", "bob ma...
+#> $ data_alerta       <dttm> 2020-09-10 10:16:33, 2020-09-10 10:16:33, 2020-0...
+#> $ titulo_da_materia <chr> "Notícias da semana no Reggae Point - MiranteFM.c...
+#> $ veiculo           <chr> "Imirante.com", "radar amazonico", "Contigo!", "O...
+#> $ data_da_materia   <dttm> 2020-09-10 05:59:00, 2020-09-10 09:17:17, 2020-0...
+#> $ dia               <int> 10, 10, 10, 9, 9, 9
+#> $ mes               <dbl> 9, 9, 9, 9, 9, 9
+#> $ ano               <dbl> 2020, 2020, 2020, 2020, 2020, 2020
+#> $ dia_semana        <chr> "quinta-feira", "quinta-feira", "quinta-feira", "...
+#> $ link              <chr> "https://imirante.com/mirantefm/noticias/2020/09/...
+#> $ host              <chr> "imirante.com", "radaramazonico.com.br", "contigo...
 ```
 
 ## Pesquisa com palavras-chave
@@ -323,19 +326,19 @@ ex3 <- google_rss("black lives matter")
 #>  1 dia
 
 glimpse(ex3)
-#> Rows: 10
+#> Rows: 11
 #> Columns: 11
 #> $ termo             <chr> "black lives matter", "black lives matter", "blac...
-#> $ data_alerta       <dttm> 2020-09-10 00:27:14, 2020-09-10 00:27:14, 2020-0...
-#> $ titulo_da_materia <chr> "American Airlines libera pin do Black Lives Matt...
-#> $ veiculo           <chr> "AEROIN", "Aventuras na História", "Ciência Estad...
-#> $ data_da_materia   <dttm> 2020-09-09 08:57:00, 2020-09-09 08:49:46, 2020-0...
-#> $ dia               <int> 9, 9, 9, 9, 9, 9, 9, 9, 9, 9
-#> $ mes               <dbl> 9, 9, 9, 9, 9, 9, 9, 9, 9, 9
+#> $ data_alerta       <dttm> 2020-09-10 10:16:34, 2020-09-10 10:16:34, 2020-0...
+#> $ titulo_da_materia <chr> "American Airlines vai confeccionar broches do “B...
+#> $ veiculo           <chr> "Estudos Nacionais", "Ciência Estadão", "RTP", "E...
+#> $ data_da_materia   <dttm> 2020-09-09 17:16:33, 2020-09-09 10:56:46, 2020-0...
+#> $ dia               <int> 9, 9, 10, 9, 9, 9, 10, 9, 9, 9, 10
+#> $ mes               <dbl> 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9
 #> $ ano               <dbl> 2020, 2020, 2020, 2020, 2020, 2020, 2020, 2020, 2...
-#> $ dia_semana        <chr> "quarta-feira", "quarta-feira", "quarta-feira", "...
-#> $ link              <chr> "https://www.aeroin.net/american-airlines-criara-...
-#> $ host              <chr> "www.aeroin.net", "aventurasnahistoria.uol.com.br...
+#> $ dia_semana        <chr> "quarta-feira", "quarta-feira", "quinta-feira", "...
+#> $ link              <chr> "https://www.estudosnacionais.com/28389/american-...
+#> $ host              <chr> "www.estudosnacionais.com", "ciencia.estadao.com....
 ```
 
 Veja a diferença entre uma pesquisa de frase exata e outra com
@@ -385,12 +388,12 @@ glimpse(ex5)
 #> Rows: 24
 #> Columns: 11
 #> $ termo             <chr> "NBA jogadores greve", "NBA jogadores greve", "NB...
-#> $ data_alerta       <dttm> 2020-09-10 00:27:15, 2020-09-10 00:27:15, 2020-0...
+#> $ data_alerta       <dttm> 2020-09-10 10:16:35, 2020-09-10 10:16:35, 2020-0...
 #> $ titulo_da_materia <chr> "Funcionários fazem greve e cobram a NBA contra r...
 #> $ veiculo           <chr> "globoesporte.com", "Revista Fórum", "Sputnik Bra...
 #> $ data_da_materia   <dttm> 2020-08-28 04:00:00, 2020-08-27 04:00:00, 2020-0...
-#> $ dia               <int> 28, 27, 27, 3, 27, 3, 28, 4, 2, 4, 28, 28, 29, 27...
-#> $ mes               <dbl> 8, 8, 8, 9, 8, 9, 8, 9, 9, 9, 8, 8, 8, 8, 9, 9, 8...
+#> $ dia               <int> 28, 27, 27, 3, 27, 3, 28, 4, 4, 2, 4, 28, 29, 27,...
+#> $ mes               <dbl> 8, 8, 8, 9, 8, 9, 8, 9, 9, 9, 9, 8, 8, 8, 9, 8, 9...
 #> $ ano               <dbl> 2020, 2020, 2020, 2020, 2020, 2020, 2020, 2020, 2...
 #> $ dia_semana        <chr> "sexta-feira", "quinta-feira", "quinta-feira", "q...
 #> $ link              <chr> "https://globoesporte.globo.com/basquete/nba/noti...
@@ -411,35 +414,40 @@ ex6 <- google_rss("Fabrício Queiroz", periodo = "hora", n_periodo = 5, frase_ex
 #>  5 hora
 
 glimpse(ex6)
-#> Rows: 3
+#> Rows: 4
 #> Columns: 11
 #> $ termo             <chr> "Fabrício Queiroz", "Fabrício Queiroz", "Fabrício...
-#> $ data_alerta       <dttm> 2020-09-10 00:27:16, 2020-09-10 00:27:16, 2020-0...
-#> $ titulo_da_materia <chr> "Lava Jato diz que Wassef recebeu R$ 2,6 mi desvi...
-#> $ veiculo           <chr> "UOL Notícias", "Tribuna do Paraná", "Jornal Toda...
-#> $ data_da_materia   <dttm> 2020-09-09 21:35:59, 2020-09-09 21:38:00, 2020-0...
-#> $ dia               <int> 9, 9, 9
-#> $ mes               <dbl> 9, 9, 9
-#> $ ano               <dbl> 2020, 2020, 2020
-#> $ dia_semana        <chr> "quarta-feira", "quarta-feira", "quarta-feira"
-#> $ link              <chr> "https://noticias.uol.com.br/politica/ultimas-not...
-#> $ host              <chr> "noticias.uol.com.br", "www.tribunapr.com.br", "w...
+#> $ data_alerta       <dttm> 2020-09-10 10:16:36, 2020-09-10 10:16:36, 2020-0...
+#> $ titulo_da_materia <chr> "Detonautas Roque Clube lança música que satiriza...
+#> $ veiculo           <chr> "OFuxico", "Revista Seleções", "Mais Goiás", "Os ...
+#> $ data_da_materia   <dttm> 2020-09-10 09:25:27, 2020-09-10 06:39:25, 2020-0...
+#> $ dia               <int> 10, 10, 10, 10
+#> $ mes               <dbl> 9, 9, 9, 9
+#> $ ano               <dbl> 2020, 2020, 2020, 2020
+#> $ dia_semana        <chr> "quinta-feira", "quinta-feira", "quinta-feira", "...
+#> $ link              <chr> "https://www.ofuxico.com.br/noticias-sobre-famoso...
+#> $ host              <chr> "www.ofuxico.com.br", "www.selecoes.com.br", "www...
 ```
 
-### Pesquisando várias palavras-chave em um *loop*
+# Pesquisando palavras links em um *loop*
 
-Faça várias buscas ao mesmo tempo (também funciona com links):
+Faça várias buscas ao mesmo tempo:
+
+  - Por palavras-chave:
+
+<!-- end list -->
 
 ``` r
 # Crie uma lista com os termos que deseja pesquisar:
-lista_de_termos <- c(
+lista_de_palavras <- c(
   "Transparência Brasil",
   "Manoel Galdino",
   "Juliana Sakai"
+   # (...)
 )
 
 # rode a lista nesse loop:
-varias_pesquisas <- lista_de_termos %>% 
+pesquisas_por_palavras <- lista_de_palavras %>% 
   map_df(~ google_rss(.x, frase_exata = T, periodo = "dia", n_periodo = 7))
 #> 
 #> 
@@ -465,23 +473,67 @@ varias_pesquisas <- lista_de_termos %>%
 #>  7 dia
 
 # veja como ficou:
-varias_pesquisas
-#> # A tibble: 11 x 11
-#>    termo data_alerta         titulo_da_mater~ veiculo data_da_materia       dia
-#>    <chr> <dttm>              <chr>            <chr>   <dttm>              <int>
-#>  1 Tran~ 2020-09-10 00:27:16 Transparência B~ Portal~ 2020-09-03 14:57:10     3
-#>  2 Tran~ 2020-09-10 00:27:16 Cancelamento do~ MixVale 2020-09-09 13:31:40     9
-#>  3 Tran~ 2020-09-10 00:27:16 Desembargadora ~ The In~ 2020-09-08 02:14:00     8
-#>  4 Tran~ 2020-09-10 00:27:16 Nota de R$ 200 ~ Revist~ 2020-09-03 12:09:09     3
-#>  5 Tran~ 2020-09-10 00:27:16 Coordenador da ~ G1      2020-09-04 22:07:00     4
-#>  6 Tran~ 2020-09-10 00:27:16 Brasil atinge m~ Jornal~ 2020-09-04 12:24:00     4
-#>  7 Tran~ 2020-09-10 00:27:16 Cegos vão ao Co~ O Popu~ 2020-09-04 18:38:00     4
-#>  8 Tran~ 2020-09-10 00:27:16 Regra geral par~ MixVale 2020-09-05 17:30:58     5
-#>  9 Mano~ 2020-09-10 00:27:17 Cancelamento do~ MixVale 2020-09-09 13:31:40     9
-#> 10 Mano~ 2020-09-10 00:27:17 Regra geral par~ MixVale 2020-09-05 17:30:58     5
-#> 11 Juli~ 2020-09-10 00:27:17 Desembargadora ~ The In~ 2020-09-08 02:14:00     8
-#> # ... with 5 more variables: mes <dbl>, ano <dbl>, dia_semana <chr>,
-#> #   link <chr>, host <chr>
+glimpse(pesquisas_por_palavras)
+#> Rows: 11
+#> Columns: 11
+#> $ termo             <chr> "Transparência Brasil", "Transparência Brasil", "...
+#> $ data_alerta       <dttm> 2020-09-10 10:16:36, 2020-09-10 10:16:36, 2020-0...
+#> $ titulo_da_materia <chr> "Transparência Brasil mostra ranking de ações de ...
+#> $ veiculo           <chr> "Portal a12", "MixVale", "The Intercept Brasil", ...
+#> $ data_da_materia   <dttm> 2020-09-03 14:57:10, 2020-09-09 13:31:40, 2020-0...
+#> $ dia               <int> 3, 9, 8, 3, 4, 4, 4, 5, 9, 5, 8
+#> $ mes               <dbl> 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9
+#> $ ano               <dbl> 2020, 2020, 2020, 2020, 2020, 2020, 2020, 2020, 2...
+#> $ dia_semana        <chr> "quinta-feira", "quarta-feira", "terça-feira", "q...
+#> $ link              <chr> "https://www.a12.com/radio/noticias/transparencia...
+#> $ host              <chr> "www.a12.com", "www.mixvale.com.br", "theintercep...
+```
+
+  - Por links RSS:
+
+<!-- end list -->
+
+``` r
+# faça o mesmo com os links:
+lista_de_links <- c(
+  "https://news.google.com/rss/search?q=%20%22Covid-19%22%20when%3A1h&hl=pt-BR&gl=BR&ceid=BR%3Apt-419",
+  "https://news.google.com/rss/search?q=%22Palmeiras%22%20when%3A1h&hl=pt-BR&gl=BR&ceid=BR%3Apt-419",
+  "https://news.google.com/rss/search?q=%22bob%20marley%22when%3A1d&hl=pt-BR&gl=BR&ceid=BR%3Apt-419"
+   # (...)
+)
+
+# rode a lista nesse loop:
+pesquisas_por_links <- lista_de_links %>% map_df(~ google_rss(.x))
+#> 
+#> 
+#> Link direto de RSS:
+#>  https://news.google.com/rss/search?q=%20%22Covid-19%22%20when%3A1h&hl=pt-BR&gl=BR&ceid=BR%3Apt-419 
+#> 
+#> 
+#> 
+#> Link direto de RSS:
+#>  https://news.google.com/rss/search?q=%22Palmeiras%22%20when%3A1h&hl=pt-BR&gl=BR&ceid=BR%3Apt-419 
+#> 
+#> 
+#> 
+#> Link direto de RSS:
+#>  https://news.google.com/rss/search?q=%22bob%20marley%22when%3A1d&hl=pt-BR&gl=BR&ceid=BR%3Apt-419
+
+# veja como ficou:
+glimpse(pesquisas_por_links)
+#> Rows: 68
+#> Columns: 11
+#> $ termo             <chr> "Covid-19", "Covid-19", "Covid-19", "Covid-19", "...
+#> $ data_alerta       <dttm> 2020-09-10 10:16:38, 2020-09-10 10:16:38, 2020-0...
+#> $ titulo_da_materia <chr> "Confira os dados da Covid-19 na microrregião - D...
+#> $ veiculo           <chr> "Diário da Jaraguá", "Valor Econômico", "Notícias...
+#> $ data_da_materia   <dttm> 2020-09-10 09:36:00, 2020-09-10 09:31:00, 2020-0...
+#> $ dia               <int> 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 1...
+#> $ mes               <dbl> 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9...
+#> $ ano               <dbl> 2020, 2020, 2020, 2020, 2020, 2020, 2020, 2020, 2...
+#> $ dia_semana        <chr> "quinta-feira", "quinta-feira", "quinta-feira", "...
+#> $ link              <chr> "https://www.diariodajaragua.com.br/saude/confira...
+#> $ host              <chr> "www.diariodajaragua.com.br", "valor.globo.com", ...
 ```
 
 # Salve os dados em uma planilha:
@@ -492,17 +544,26 @@ O problema aqui é que você só pode reescrever a planilha adicionando
 nova aba. Caso contrário sempre terá que criar outra.
 
 ``` r
-# Salvando em excel:
-nova_aba <- paste("Pesquisa em", Sys.Date())
+# Cria as abas, sempre tem que criar uma aba nova:
+aba_plvr_chave <- paste("Palavras-chave em", today())
+aba_links <- paste("Links em", today())
 
-library(xlsx)
-
-write.xlsx(as.data.frame(varias_pesquisas),
+# palavras
+write.xlsx(as.data.frame(pesquisas_por_palavras),
            file = "./data/varias_pesquisas.xlsx",
            # insere os dados em uma aba sem apagar o que já tinha antes:
-           sheetName = nova_aba,
+           sheetName = aba_plvr_chave,
+           append = TRUE)
+
+# links
+write.xlsx(as.data.frame(pesquisas_por_links),
+           file = "./data/varias_pesquisas.xlsx",
+           sheetName = aba_links,
            append = TRUE)
 ```
+
+Veja o resultado
+[AQUI](https://github.com/rdurl0/google-rss-feeds-com-r/blob/master/data/varias_pesquisas.xlsx)
 
 ## Google Spreadsheets:
 
@@ -510,30 +571,51 @@ Siga os passos (atenção ao item 3\!):
 
 1.  Vá no Google Drive e **crie uma planilha em branco**;
 2.  Copie o **link da planilha**;
+
+<!-- end list -->
+
+``` r
+# link da planilha criada no drive:
+link_da_planilha <- "https://docs.google.com/spreadsheets/d/1-sjp0oF3RXDMYwT3IKWEF7y6Cp-ahBkD_MYti5ZejX8/edit?usp=sharing"
+```
+
 3.  Crie uma aba nova com
     [`sheet_write()`](https://googlesheets4.tidyverse.org/reference/sheet_write.html)
     e **não volte a usar essa função** (senão você reescreve em cima da
     que estava salva);
+
+<!-- end list -->
+
+``` r
+# USE SOMENTE UMA VEZ PARA CRIAR CADA ABA DA PLANILHA:
+sheet_write(data = pesquisas_por_palavras,
+            ss = link_da_planilha,
+            sheet = "Palavras-chave")
+
+sheet_write(data = pesquisas_por_links,
+            ss = link_da_planilha,
+            sheet = "Links")
+```
+
 4.  Atualiza a planilha com novos dados com
     [`sheet_append()`](https://googlesheets4.tidyverse.org/reference/sheet_append.html).
 
 <!-- end list -->
 
 ``` r
-library(googlesheets4)
-
-# link da planilha criada no drive:
-link_da_planilha <- "https://docs.google.com/spreadsheets/d/1-sjp0oF3RXDMYwT3IKWEF7y6Cp-ahBkD_MYti5ZejX8/edit?usp=sharing"
-
-# USE SOMENTE UMA VEZ PARA CRIAR A PLANILHA:
-sheet_write(data = varias_pesquisas,
-            ss = link_da_planilha,
-            sheet = "Pesquisa")
-
 # SEMPRE QUE FOR ATUALIZAR USA ESTA: 
-sheet_append(data = ex2,
+sheet_append(data = ex5, # adiciona novos dados
              ss = link_da_planilha,
-             sheet = "Pesquisa")
+             sheet = "Palavras-chave")
+
+sheet_append(data = ex2, # adiciona novos dados
+             ss = link_da_planilha,
+             sheet = "Links")
 ```
 
-FIM :smile:
+veja o resultado
+[AQUI](https://docs.google.com/spreadsheets/d/1-sjp0oF3RXDMYwT3IKWEF7y6Cp-ahBkD_MYti5ZejX8/edit?usp=sharing)
+
+FIM
+
+:smile:
