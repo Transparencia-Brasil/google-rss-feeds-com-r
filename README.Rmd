@@ -310,7 +310,7 @@ ex6 <- google_rss("Fabrício Queiroz", periodo = "hora", n_periodo = 5, frase_ex
 glimpse(ex6)
 ```
 
-# Pesquisando palavras links em um *loop*
+# Pesquisando palavras e links em um *loop*
 
 Faça várias buscas ao mesmo tempo:
 
