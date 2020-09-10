@@ -249,20 +249,22 @@ google_rss <- function(termo, frase_exata = TRUE, periodo = NULL, n_periodo = NU
 
 ## Pesquisa com link direto:
 
-### Link go Google Alert
+### Google Alert
 
 ATENÇÃO: Esse link expira a cada 24 horas.
 
-```{r eval = FALSE}
+```{r}
 # link direto de um feed recebido pelo e-mail do Google Alerts:
-ex1 <- google_rss("https://www.google.com/alerts/feeds/05043731044875902072/152558739277222634")
+ex1 <- google_rss("https://www.google.com/alerts/feeds/14690018069938359893/7021405697253714962")
 
 glimpse(ex1)
 ```
 
 ### Google News RSS
 
-O RSS do Google News fica em uma URL específica, com padrão: `https://news.google.com/rss/search?q={_termo_de_pesquisa_}`. Os resultados são os mesmos conteúdos de uma busca comum no [Google News](https://news.google.com). A diferença é que o RSS fica em uma página XML.
+O RSS do Google News fica em uma URL específica, com padrão: `https://news.google.com/rss/search?q={_termo_de_pesquisa_}`.
+
+Os resultados são os mesmos conteúdos de uma busca comum no [Google News](https://news.google.com). A diferença é que o RSS fica em uma [página XML](https://news.google.com/rss/search?q=%22bob%20marley%22when%3A1d&hl=pt-BR&gl=BR&ceid=BR%3Apt-419) e os resultados do [Google News tradicional](https://news.google.com/search?q=%22bob%20marley%22when%3A1d&hl=pt-BR&gl=BR&ceid=BR%3Apt-419) é uma interface para o público interagir.
 
 ```{r}
 # link direto de um feed do Google News:
@@ -391,7 +393,7 @@ link_da_planilha <- "https://docs.google.com/spreadsheets/d/1-sjp0oF3RXDMYwT3IKW
 
 3. Crie uma aba nova com [`sheet_write()`](https://googlesheets4.tidyverse.org/reference/sheet_write.html) e **não volte a usar essa função** (senão você reescreve em cima da que estava salva);
 
-```{r}
+```{r eval = FALSE}
 # USE SOMENTE UMA VEZ PARA CRIAR CADA ABA DA PLANILHA:
 sheet_write(data = pesquisas_por_palavras,
             ss = link_da_planilha,
@@ -404,7 +406,7 @@ sheet_write(data = pesquisas_por_links,
 
 4. Atualiza a planilha com novos dados com [`sheet_append()`](https://googlesheets4.tidyverse.org/reference/sheet_append.html).
 
-```{r}
+```{reval = FALSE}
 # SEMPRE QUE FOR ATUALIZAR USA ESTA: 
 sheet_append(data = ex5, # adiciona novos dados
              ss = link_da_planilha,
@@ -419,9 +421,6 @@ sheet_append(data = ex2, # adiciona novos dados
 veja o resultado [AQUI](https://docs.google.com/spreadsheets/d/1-sjp0oF3RXDMYwT3IKWEF7y6Cp-ahBkD_MYti5ZejX8/edit?usp=sharing)
 
 FIM
-<<<<<<< HEAD
 
 :smile:
-=======
-:smile:
->>>>>>> 77ae53318408b7105ee4ea43364d7b55257d60fc
+
