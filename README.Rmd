@@ -419,5 +419,9 @@ sheet_append(data = ex2, # adiciona novos dados
 veja o resultado [AQUI](https://docs.google.com/spreadsheets/d/1-sjp0oF3RXDMYwT3IKWEF7y6Cp-ahBkD_MYti5ZejX8/edit?usp=sharing)
 
 FIM
+<<<<<<< HEAD
 
 :smile:
+=======
+:smile:
+>>>>>>> 77ae53318408b7105ee4ea43364d7b55257d60fc

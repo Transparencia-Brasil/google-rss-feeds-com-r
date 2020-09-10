@@ -29,8 +29,12 @@ Alerts](https://www.google.com.br/alerts) em uma planilha estruturada.
 
 # Baixe o script
 
+<<<<<<< HEAD
 Você pode baixar o script [CLICANDO
 AQUI](https://github.com/rdurl0/google-rss-feeds-com-r/blob/master/R/google_rss.R).
+=======
+Você pode baixar o script [CLICANDO AQUI](https://github.com/rdurl0/google-rss-feeds-com-r/blob/master/R/google_rss.R).
+>>>>>>> 77ae53318408b7105ee4ea43364d7b55257d60fc
 
 # Pacotes necessários
 
