@@ -147,7 +147,9 @@ google_rss <- function(termo, frase_exata = TRUE, periodo = NULL, n_periodo = NU
     link <- item %>% 
       xml_find_all(".//link/@href") %>% 
       xml_text() %>% 
-      map_chr(~gsub("(^https.+)(https.+)(\\&.+$)", "\\2", .x))
+      map_chr(~gsub("(^https.+)(http.+)", "\\2", .x)) %>% 
+      map_chr(~ str_remove_all(.x, "(?<=\\&).+")) %>% 
+      map_chr(~ str_remove(.x, "\\&$"))
     
     veiculo <- link %>% 
       map(httr::GET) %>% 
